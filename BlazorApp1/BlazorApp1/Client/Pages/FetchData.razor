@@ -1,6 +1,7 @@
 @page "/fetchdata"
 @using BlazorApp1.Shared
 @inject HttpClient Http
+@inject WeatherForecastsService Service
 
 <h1>Weather forecast</h1>
 
@@ -36,11 +37,13 @@ else
 }
 
 @code {
-    private WeatherForecast[] forecasts;
+    private IEnumerable<WeatherForecast> forecasts;
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        await Service.GetAllAsync(
+            success => forecasts = success,
+            problem => Console.WriteLine("Handle this problem: " + problem.Detail));
     }
 
 }
