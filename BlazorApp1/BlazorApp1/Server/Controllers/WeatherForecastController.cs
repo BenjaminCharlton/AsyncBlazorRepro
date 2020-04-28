@@ -31,24 +31,24 @@ namespace MyConstitution.WebApi.Controllers
             //For demonstration, this will decide if we return a result or a problem.
             bool makeTrouble = rng.Next(0, 2) == 1;
 
-            if (makeTrouble)
+            //if (makeTrouble)
+            //{
+            //    return BadRequest(new ProblemDetails
+            //    {
+            //        Detail = "Something troublesome happened"
+            //    });
+            //}
+            //else
+            //{
+            var model = Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
-                return BadRequest(new ProblemDetails
-                {
-                    Detail = "Something troublesome happened"
-                });
-            }
-            else
-            {
-                var model = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-                {
-                    Date = DateTime.Now.AddDays(index),
-                    TemperatureC = rng.Next(-20, 55),
-                    Summary = Summaries[rng.Next(Summaries.Length)]
-                });
+                Date = DateTime.Now.AddDays(index),
+                TemperatureC = rng.Next(-20, 55),
+                Summary = Summaries[rng.Next(Summaries.Length)]
+            });
 
-                return Ok(model);
-            }
+            return Ok(model);
+            // }
         }
     }
 }

@@ -21,6 +21,8 @@ namespace BlazorApp1.Client.Services
         }
 
 
+
+
         protected virtual async Task GetManyAsync<TExpected>(
             string path,
             Action<IEnumerable<TExpected>> actionOnSuccess,
@@ -33,28 +35,26 @@ namespace BlazorApp1.Client.Services
 
             if (problem is { })
             {
-                var taskOnProblem = TaskFromAction(actionOnProblem, problem);
-                await taskOnProblem;
+                actionOnProblem(problem);
             }
             else
             {
                 IEnumerable<TExpected>? expected = Deserialize<IEnumerable<TExpected>>(json);
                 expected = EnsureNotNull(expected);
 
-                var taskOnSuccess = TaskFromAction(actionOnSuccess, expected);
-                await taskOnSuccess;
+                actionOnSuccess(expected);
             }
         }
 
-        private Task TaskFromAction<T>(Action<T> action, T state)
-        {
-            return new Task(ActionOfObjectFromActionOfT(action), state);
-        }
+        //private Task TaskFromAction<T>(Action<T> action, T state)
+        //{
+        //    return new Task(ActionOfObjectFromActionOfT(action), state);
+        //}
 
-        private Action<object> ActionOfObjectFromActionOfT<T>(Action<T> actionOfT)
-        {
-            return new Action<object>(o => actionOfT((T)o));
-        }
+        //private Action<object> ActionOfObjectFromActionOfT<T>(Action<T> actionOfT)
+        //{
+        //    return new Action<object>(o => actionOfT((T)o));
+        //}
 
         private IEnumerable<T> EnsureNotNull<T>(IEnumerable<T>? enumerable)
         {
@@ -76,9 +76,15 @@ namespace BlazorApp1.Client.Services
         private T? Deserialize<T>(string json)
             where T : class
         {
+            var jsonOptions = new JsonSerializerOptions()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
+            };
+
             try
             {
-                return JsonSerializer.Deserialize<T>(json, null);
+                return JsonSerializer.Deserialize<T>(json, jsonOptions);
             }
             catch (JsonException)
             {
